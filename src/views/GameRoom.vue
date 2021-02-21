@@ -130,6 +130,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+button{
+  outline: none;
+}
 .text-box{
   *{
     font-weight: 300;
