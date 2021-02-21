@@ -67,6 +67,9 @@ export default {
       this.socket.disconnect()
     })
   },
+  beforeDestroy() {
+    this.socket.disconnect()
+  },
   methods:{
     sendAnswer(answer){
       this.answer = answer

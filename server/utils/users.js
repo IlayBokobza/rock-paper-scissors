@@ -80,6 +80,10 @@ const setID = ({whoToUpdate,gameID,id}) => {
         return {Error:'Id already set'}
     }
 
+    if(!games[index][whoToUpdate]){
+        return {Error:'invalid data'}
+    }
+
     games[index][whoToUpdate].id = id
 
     updateGames(games)

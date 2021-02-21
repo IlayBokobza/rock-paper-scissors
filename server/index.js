@@ -43,6 +43,11 @@ io.on('connection',socket => {
             return cb({Error:'Cannot connect as host'})
         }
 
+        //checks if player tried to join as host
+        if(localGame.player?.id && whoToUpdate === 'player'){
+            return cb({Error:'Cannot connect as player now'})
+        }
+
         setID({
             whoToUpdate,
             gameID,
