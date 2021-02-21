@@ -10,7 +10,7 @@
       <button @click="pick"><img alt="cartoon paper" src="@/assets/paper.png"></button>
       <button @click="pick"><img alt="cartoon scissors" src="@/assets/scissors.png"></button>
     </v-container>
-    <Popup @agree="popupModel = false" :model="popupModel" title="Alert!" text="Hint: you cant win solo loser! get friend lol!" onlyAccept="true" btnText="ok :("/>
+    <Popup @agree="popupModel = false" :model="popupModel" title="Alert!" text="Hint: you cant win solo loser! get friends lol!" onlyAccept="true" btnText="ok :("/>
   </div>
 </template>
 
