@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar color="#356BF5" class="v-app-bar"><span>Rock Paper Scissors</span></v-app-bar>
+  <v-app-bar color="#356BF5" class="v-app-bar"><span @click="$router.push({path:'/'})">Rock Paper Scissors</span></v-app-bar>
 </template>
 
 <script>
@@ -18,6 +18,7 @@ export default {
     margin: 0 auto;
     display: block;
     font-size: 40px;
+    cursor: pointer;
   }
 }
 </style>
