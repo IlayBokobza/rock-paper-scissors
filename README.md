@@ -20,3 +20,5 @@ npm run dev
 ```
 npm run build
 ```
+### For Full hosted app
+[click here](https://rps.ilaydev.com)
