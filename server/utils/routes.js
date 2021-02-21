@@ -17,13 +17,17 @@ router.post('/api/game/:id',(req, res) => {
     let username = req.body?.username
 
     if(!username){
-        return res.send({Error:"Please Provide a username"})
+        return res.status(400).send({Error:"Please Provide a username"})
     }
 
-    setPlayer({
+    let err = setPlayer({
         gameID:req.params.id,
         playName:username
     })
+
+    if(err){
+        return res.status(400).send(err)
+    }
 
     res.send()
 })

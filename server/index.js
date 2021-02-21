@@ -1,6 +1,6 @@
 const express = require('express')
 const http = require('http')
-const {setID,checkForGame,deleteGame,isGameFull,getGame,setAnswer} = require('./utils/users')
+const {setID,checkForGame,setNewGameReq,deleteGame,isGameFull,getGame,setAnswer,resetGame} = require('./utils/users')
 const {calcResult} = require('./utils/helper')
 
 //start express
@@ -56,6 +56,7 @@ io.on('connection',socket => {
         }
     })
 
+    //when a player answers
     socket.on('answer',answer => {
         setAnswer({
             gameID:game?.id,
@@ -73,16 +74,33 @@ io.on('connection',socket => {
         socket.to(game?.id).broadcast.emit('enemyAnswered')
     })
 
+    //req a new game
+    socket.on('reqNewGame',(cb) => {
+        let err = setNewGameReq({
+            whoToUpdate:player,
+            gameID:game.id
+        })
+
+        if(err){
+            return cb({Error:err})
+        }
+
+        game = getGame(game?.id)
+
+        if(game.host?.wantsNewGame && game.player?.wantsNewGame){
+            resetGame(game.id)
+            io.to(game?.id).emit('startNewGame')
+        }else {
+            socket.to(game?.id).broadcast.emit('reqNewGame')
+        }
+
+    })
+
 
     //on disconnect
     socket.on('disconnect',() => {
         io.to(game?.id).emit('gameOver')
         deleteGame(game?.id)
-    })
-
-
-    socket.on('test',() => {
-        console.log('')
     })
 })
 

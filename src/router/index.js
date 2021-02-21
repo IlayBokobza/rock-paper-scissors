@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 //pages
 import Home from '../views/Home.vue'
 import GameRoom from "@/views/GameRoom";
+import JoinRoom from '@/views/JoinRoom'
 
 Vue.use(VueRouter)
 
@@ -11,6 +12,11 @@ const routes = [
     path: '/',
     name: 'Home',
     component: Home
+  },
+  {
+    path: '/join-room',
+    name: 'JoinRoom',
+    component: JoinRoom
   },
   {
     path: '/game-room',

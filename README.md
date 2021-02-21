@@ -1,24 +1,22 @@
-# rock-paper-scissors
+# Rock Paper Scissors
 
 ## Project setup
 ```
 npm install
 ```
-
-### Compiles and hot-reloads for development
+### Serve Front End App
 ```
 npm run serve
 ```
-
-### Compiles and minifies for production
+### Run Dev Backend Server
+```
+npm run server
+```
+### Concurrently run backend and front end server
+```
+npm run dev
+```
+### Build Front end for production
 ```
 npm run build
 ```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).

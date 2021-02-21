@@ -48,11 +48,11 @@ const setPlayer = ({gameID,playName}) => {
     let index = games.findIndex(game => game.id === gameID)
 
     //if game is full
-    if(games[index].player){
+    if(games[index]?.player){
         return {Error:'Game is full'}
     }
 
-    if(games[index].host.username === playName){
+    if(games[index]?.host.username === playName){
         return {Error:'Name is taken'}
     }
 
@@ -76,7 +76,7 @@ const setID = ({whoToUpdate,gameID,id}) => {
     }
 
     //check if id is already set
-    if(games[index][whoToUpdate].id){
+    if(games[index][whoToUpdate]?.id){
         return {Error:'Id already set'}
     }
 
@@ -126,6 +126,37 @@ const setAnswer = ({gameID,whoToUpdate,answer}) => {
     updateGames(games)
 }
 
+const setNewGameReq = ({whoToUpdate,gameID}) => {
+    let games = getGames()
+    let index = games.findIndex(game => game.id === gameID)
+
+    if(index === -1){
+        return {Error:'Game not found'}
+    }
+
+    games[index][whoToUpdate].wantsNewGame = true
+
+    updateGames(games)
+}
+
+const resetGame = (gameID) => {
+    let games = getGames()
+    let index = games.findIndex(game => game.id === gameID)
+
+    if(index === -1){
+        return {Error:'Game not found'}
+    }
+
+    try{
+        games[index].host.wantsNewGame = false;
+        games[index].player.wantsNewGame = false;
+
+        games[index].host.answer = null;
+        games[index].player.answer = null;
+    }catch{}
+
+    updateGames(games)
+}
 
 module.exports = {
     getGames,
@@ -138,4 +169,6 @@ module.exports = {
     isGameFull,
     getGame,
     setAnswer,
+    setNewGameReq,
+    resetGame,
 }

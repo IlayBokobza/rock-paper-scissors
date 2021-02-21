@@ -1,22 +1,28 @@
 <template>
   <div class="game-room">
-    <h1>Game Room</h1>
-    <h2 v-if="!enemy">Game Id: {{gameID}}</h2>
-    <h2 v-if="!result">Enemy: {{enemy || 'waiting...'}}</h2>
-    <h2 v-if="enemy && hasEnemyAnswered && !result">{{enemy}} has answered!</h2>
-    <h2 v-if="answer">You Chose: {{answer}}</h2>
-    <h2 v-if="result === 'tie'">Result: Tie!</h2>
-    <h2 v-else-if="result">Result: {{result}} has won!</h2>
-    <div v-if="enemy">
-      <button :disabled="answer" @click="sendAnswer('rock')">Rock</button>
-      <button :disabled="answer" @click="sendAnswer('paper')">Paper</button>
-      <button :disabled="answer" @click="sendAnswer('scissors')">Scissors</button>
+    <div class="text-center mt-2 text-box">
+      <h1 class="font-weight-bold" v-if="!enemy">Game Id: {{gameID}}</h1>
+      <h2 v-if="!result">Enemy: {{enemy || 'waiting...'}}</h2>
+      <h2 v-if="enemy && hasEnemyAnswered && !result">{{enemy}} has answered!</h2>
+      <h2 v-if="answer">You Chose: {{answer}}</h2>
+      <h2 v-if="result === 'tie'">Result: Tie!</h2>
+      <h2 v-if="result === 'you'">You won!</h2>
+      <h2 v-else-if="result">Result: {{result}} has won!</h2>
     </div>
+    <button class="new-game-btn" v-if="result" @click="socket.emit('reqNewGame')">New Game?</button>
+    <v-container class="d-flex justify-space-around" v-if="enemy && !answer">
+      <button @click="sendAnswer('rock')"><img alt="cartoon rock" src="@/assets/rock.png"></button>
+      <button @click="sendAnswer('paper')"><img alt="cartoon paper" src="@/assets/paper.png"></button>
+      <button @click="sendAnswer('scissors')"><img alt="cartoon scissors" src="@/assets/scissors.png"></button>
+    </v-container>
+    <Popup @agree="leaveGame" :model="popupModel" :text="popupText" :title="popupTitle" onlyAccept="true" btnText="Go Back" />
+    <Popup @agree="socket.emit('reqNewGame')" @disagree="leaveGame" :model="alertPopupModel" :title="alertPopupTitle" :text="alertPopupText" />
   </div>
 </template>
 
 <script>
 import {io} from 'socket.io-client'
+import Popup from "@/components/Popup";
 export default {
   name: "GameRoom",
   data(){
@@ -27,8 +33,19 @@ export default {
       answer:null,
       hasEnemyAnswered:false,
       result:null,
-      socket:io()
+      socket:io(),
+      //popup values
+      popupModel:false,
+      popupText:null,
+      popupTitle:null,
+      //alert popup
+      alertPopupModel:false,
+      alertPopupTitle:null,
+      alertPopupText:null,
     }
+  },
+  components:{
+    Popup
   },
   created() {
     //set up socket events
@@ -39,13 +56,25 @@ export default {
       whoToUpdate:this.$route.query.player,
       gameID:this.gameID,
     },(err) => {
-      console.warn(err)
+      this.popupTitle = 'Sorry, An Error has occurred'
+      this.popupText = err.Error
+      this.popupModel = true
+    })
+
+    //makes sure to disconnect from socket when closes tab
+    window.addEventListener('beforeunload',(e) => {
+      e.preventDefault()
+      this.socket.disconnect()
     })
   },
   methods:{
     sendAnswer(answer){
       this.answer = answer
       this.socket.emit('answer',answer)
+    },
+    leaveGame(){
+      this.socket.disconnect()
+      this.$router.push({path:'/join-room'})
     },
     socketEvents(){
       //game start
@@ -58,7 +87,9 @@ export default {
       })
       //game over
       this.socket.on('gameOver',() => {
-        this.$router.push({name:'Home'})
+        this.popupTitle = 'Alert!'
+        this.popupText = 'The other user has disconnected!'
+        this.popupModel = true
       })
 
       //enemy answered
@@ -77,11 +108,39 @@ export default {
         }
         this.result = res
       })
+
+      //requested a new game
+      this.socket.on('reqNewGame',() => {
+        this.alertPopupText = `${this.enemy} has requested a new game!`
+        this.alertPopupTitle = 'Alert!'
+        this.alertPopupModel = true
+      })
+
+      //start New Game
+      this.socket.on('startNewGame',() => {
+        //resets values
+        this.alertPopupModel = false
+        this.result = null
+        this.hasEnemyAnswered = false
+        this.answer = false
+      })
     }
   }
 }
 </script>
 
-<style scoped>
-
+<style lang="scss" scoped>
+.text-box{
+  *{
+    font-weight: 300;
+  }
+}
+.new-game-btn{
+  display: block;
+  margin: 10px auto;
+  text-decoration: underline;
+}
+img{
+  width: 280px;
+}
 </style>
