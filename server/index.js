@@ -29,7 +29,7 @@ io.on('connection',socket => {
             return cb({Error:'Game not found'})
         }
 
-        game = getGame(gameID)
+        const localGame = getGame(gameID)
 
         //checks for invalid player type
         if(whoToUpdate !== 'host' && whoToUpdate !== 'player'){
@@ -39,7 +39,7 @@ io.on('connection',socket => {
         player = whoToUpdate
 
         //checks if player tried to join as host
-        if(game.host?.id && whoToUpdate === 'host'){
+        if(localGame.host?.id && whoToUpdate === 'host'){
             return cb({Error:'Cannot connect as host'})
         }
 
@@ -50,6 +50,7 @@ io.on('connection',socket => {
         })
 
         socket.join(gameID)
+        game = localGame
 
         if(isGameFull(gameID)){
             io.to(gameID).emit('gameStart',{host:game.host,player:game.player})
@@ -106,11 +107,6 @@ io.on('connection',socket => {
 
 //port for prod and dev
 const port = process.env.PORT || 3000
-
-//serves test page
-app.get('/api/testing',(req, res) => {
-    res.sendFile(`${__dirname}/test.html`)
-})
 
 //serves app
 app.use(express.static(`${__dirname}/dist`))
