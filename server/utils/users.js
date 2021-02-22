@@ -1,16 +1,23 @@
 const fs = require('fs')
 const uniqid = require('uniqid')
+const path = require('path')
+const filePath = path.resolve(__dirname,'../data/games.json')
 
 const getGames = () => {
-    return JSON.parse(fs.readFileSync(`${__dirname}/games.json`).toString())
+    return JSON.parse(fs.readFileSync(filePath).toString())
 }
 
 const updateGames = (games) => {
-    fs.writeFileSync(`${__dirname}/games.json`,JSON.stringify(games))
+    fs.writeFileSync(filePath,JSON.stringify(games))
 }
 
 
-const createGame = (username,id) => {
+const createGame = (username,id,cb) => {
+    if(!username){
+        return cb({Error:'Please Provide a username'})
+    }
+    username = username.trim()
+
     let games = getGames()
     let newGame = {
         host:{
@@ -42,21 +49,30 @@ const deleteGame = (id) => {
     updateGames(games)
 }
 
-const setPlayer = ({gameID,playName}) => {
+const setPlayer = ({gameID,playName,playerId}) => {
     let games = getGames()
 
     let index = games.findIndex(game => game.id === gameID)
+
+    //if no player name
+    if(!playName){
+        return {Error: 'Please Provide a username'}
+    }
+
+    //if game not found
+    if(index === -1){
+        return {Error:'Game not found'}
+    }
 
     //if game is full
     if(games[index]?.player){
         return {Error:'Game is full'}
     }
 
-    if(games[index]?.host.username === playName){
-        return {Error:'Name is taken'}
-    }
+    //makes player id null if not provided
+    playerId = (playerId) ? playerId:null
 
-    games[index].player = {username:playName,id:null}
+    games[index].player = {username:playName,id:playerId}
 
     updateGames(games)
 }

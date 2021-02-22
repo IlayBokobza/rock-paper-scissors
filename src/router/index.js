@@ -5,6 +5,7 @@ import Home from '../views/Home.vue'
 import GameRoom from "@/views/GameRoom";
 import JoinRoom from '@/views/JoinRoom'
 import Solo from "@/views/Solo";
+import Queue from "@/views/Queue";
 
 Vue.use(VueRouter)
 
@@ -23,6 +24,11 @@ const routes = [
     path: '/game-room',
     name: 'GameRoom',
     component: GameRoom
+  },
+  {
+    path: '/queue',
+    name:'Queue',
+    component: Queue
   },
   {
     path: '/solo',

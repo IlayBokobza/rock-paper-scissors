@@ -14,10 +14,6 @@ export default {
     Bar,
     Footer,
   },
-
-  data: () => ({
-    //
-  }),
 };
 </script>
 <style lang="scss">
@@ -25,5 +21,14 @@ export default {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+  }
+  .center{
+    margin: 0 auto;
+  }
+  .mid-screen{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
   }
 </style>

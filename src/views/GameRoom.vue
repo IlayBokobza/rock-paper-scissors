@@ -6,10 +6,11 @@
       <h2 v-if="enemy && hasEnemyAnswered && !result">{{enemy}} has answered!</h2>
       <h2 v-if="answer">You Chose: {{answer}}</h2>
       <h2 v-if="result === 'tie'">Result: Tie!</h2>
-      <h2 v-if="result === 'you'">You won!</h2>
+      <h2 v-else-if="result === 'you'">You won!</h2>
       <h2 v-else-if="result">Result: {{result}} has won!</h2>
     </div>
-    <button class="new-game-btn" v-if="result" @click="socket.emit('reqNewGame')">New Game?</button>
+    <button class="new-game-btn" v-if="result && !reqForNewGame" @click="socket.emit('reqNewGame');reqForNewGame = true">New Game?</button>
+    <p v-if="reqForNewGame" class="new-game-btn">Request Sent!</p>
     <v-container class="d-flex justify-space-around" v-if="enemy && !answer">
       <button @click="sendAnswer('rock')"><img alt="cartoon rock" src="@/assets/rock.png"></button>
       <button @click="sendAnswer('paper')"><img alt="cartoon paper" src="@/assets/paper.png"></button>
@@ -33,7 +34,7 @@ export default {
       answer:null,
       hasEnemyAnswered:false,
       result:null,
-      socket:io(),
+      reqForNewGame:false,
       //popup values
       popupModel:false,
       popupText:null,
@@ -69,6 +70,7 @@ export default {
   },
   beforeDestroy() {
     this.socket.disconnect()
+    this.$store.commit('resetSocket')
   },
   methods:{
     sendAnswer(answer){
@@ -77,6 +79,7 @@ export default {
     },
     leaveGame(){
       this.socket.disconnect()
+      this.$store.commit('resetSocket')
       this.$router.push({path:'/join-room'})
     },
     socketEvents(){
@@ -126,7 +129,17 @@ export default {
         this.result = null
         this.hasEnemyAnswered = false
         this.answer = false
+        this.reqForNewGame = false
       })
+    }
+  },
+  computed:{
+    socket(){
+      if(this.$store.state.socket){
+        return this.$store.state.socket
+      }else {
+        return io()
+      }
     }
   }
 }
@@ -145,6 +158,7 @@ button{
   display: block;
   margin: 10px auto;
   text-decoration: underline;
+  text-align: center;
 }
 img{
   width: 280px;

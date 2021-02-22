@@ -5,6 +5,7 @@
     <v-container class="d-flex justify-space-around">
       <button v-if="name" @click="createGame">Create <br> Game</button>
       <button v-if="name" @click="namePopupModel = true">Join <br> Game</button>
+      <button v-if="name" @click="$router.push({path:'/queue',query:{name}})">Queue <br> Game</button>
     </v-container>
     <Popup @disagree="namePopupModel = false" @agree="joinGame" :model="namePopupModel" :feedback="popupFeedback" title="Please Enter Game Id" input="true" disagreeBtnText="Cancel" btnText="Join" placeholder="Game Id"/>
   </div>
@@ -13,6 +14,7 @@
 <script>
 import axios from 'axios'
 import Popup from "@/components/Popup";
+import {io} from 'socket.io-client'
 export default {
   name: 'Home',
   components:{
@@ -23,6 +25,7 @@ export default {
       name: null,
       namePopupModel:false,
       popupFeedback:null,
+      socket:io()
     }
   },
   created() {
@@ -61,6 +64,13 @@ button{
   padding: 50px;
   font-weight: 700;
   user-select: none;
+  transform: translateY(0);
+  transition: all .1s;
+
+  &:hover{
+    transform: translateY(-3px);
+    box-shadow: 2px 5px 4px rgba(0, 0, 0, 0.25);
+  }
 }
 .v-input{
   width: 50%;
