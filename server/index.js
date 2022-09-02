@@ -1,5 +1,6 @@
 const express = require('express')
 const http = require('http')
+require('dotenv').config()
 
 //start express
 const app = express()
